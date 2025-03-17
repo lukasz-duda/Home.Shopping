@@ -1,0 +1,33 @@
+name: shopping
+
+services:
+
+  ui:
+    build:
+      context: ui
+      dockerfile: Dockerfile
+    ports:
+      - "3002:80"
+    depends_on:
+      - api
+
+  api:
+    build:
+      context: api
+      dockerfile: Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Docker"
+    ports:
+      - "5002:8080"
+    depends_on:
+      - database
+
+  database:
+    image: mysql:5.7.38
+    environment:
+      MYSQL_ROOT_PASSWORD: "shopping"
+      MYSQL_USER: "shopping"
+      MYSQL_PASSWORD: "shopping"
+      MYSQL_DATABASE: "shopping"
+    ports:
+      - "3306:3306"
