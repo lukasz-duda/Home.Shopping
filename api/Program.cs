@@ -24,6 +24,8 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddProblemDetails();
 
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 app.UseSwagger();
@@ -39,6 +41,8 @@ app.UseExceptionHandler();
 app.MapGet("/", () => "Home.Shopping")
     .WithName("GetName")
     .WithOpenApi();
+
+app.MapHub<ShoppingHub>("/shopping");
 
 app.UseCors();
 
