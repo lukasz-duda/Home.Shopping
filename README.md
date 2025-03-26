@@ -25,7 +25,7 @@ Start shopping-ui:
 ```bash
 cd ui
 npm i
-npm dev
+npm run dev
 
 ```
 
