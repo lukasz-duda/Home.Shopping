@@ -2,10 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Home.Shopping;
 
-public class ShoppingDbContext : DbContext
+public class ShoppingDbContext(DbContextOptions<ShoppingDbContext> options) : DbContext(options)
 {
-    public ShoppingDbContext(DbContextOptions<ShoppingDbContext> options)
-        : base(options)
-    {
-    }
+    public DbSet<ShoppingListItem> ShoppingItems { get; set; }
 }
