@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Home.Shopping.Migrations
 {
     /// <inheritdoc />
-    public partial class AddShoppingList : Migration
+    public partial class AddShoppingListItems : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,7 +15,7 @@ namespace Home.Shopping.Migrations
                 .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "ShoppingItems",
+                name: "ShoppingListItems",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false),
@@ -23,7 +23,7 @@ namespace Home.Shopping.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ShoppingItems", x => x.Id);
+                    table.PrimaryKey("PK_ShoppingListItems", x => x.Id);
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
         }
@@ -32,7 +32,7 @@ namespace Home.Shopping.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ShoppingItems");
+                name: "ShoppingListItems");
         }
     }
 }

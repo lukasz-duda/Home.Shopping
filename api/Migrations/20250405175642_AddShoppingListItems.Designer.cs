@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Home.Shopping.Migrations
 {
     [DbContext(typeof(ShoppingDbContext))]
-    [Migration("20250405135912_AddShoppingList")]
-    partial class AddShoppingList
+    [Migration("20250405175642_AddShoppingListItems")]
+    partial class AddShoppingListItems
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -34,7 +34,7 @@ namespace Home.Shopping.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ShoppingItems");
+                    b.ToTable("ShoppingListItems");
                 });
 #pragma warning restore 612, 618
         }
