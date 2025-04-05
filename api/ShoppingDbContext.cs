@@ -4,5 +4,5 @@ namespace Home.Shopping;
 
 public class ShoppingDbContext(DbContextOptions<ShoppingDbContext> options) : DbContext(options)
 {
-    public DbSet<ShoppingListItem> ShoppingItems { get; set; }
+    public DbSet<ShoppingListItem> ShoppingListItems { get; set; }
 }

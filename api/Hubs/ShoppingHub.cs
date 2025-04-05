@@ -6,7 +6,7 @@ public class ShoppingHub : Hub
 {
     public List<ShoppingListItem> GetItems(ShoppingDbContext dbContext)
     {
-        List<ShoppingListItem> shoppingList = dbContext.ShoppingItems.ToList();
+        List<ShoppingListItem> shoppingList = dbContext.ShoppingListItems.ToList();
         return shoppingList;
     }
 
@@ -18,7 +18,7 @@ public class ShoppingHub : Hub
             Name = name,
         };
 
-        dbContext.ShoppingItems.Add(item);
+        dbContext.ShoppingListItems.Add(item);
         await dbContext.SaveChangesAsync();
 
         await Clients.All.SendAsync("ItemAdded", item);
@@ -26,11 +26,11 @@ public class ShoppingHub : Hub
 
     public async Task RemoveItem(Guid itemId, ShoppingDbContext dbContext)
     {
-        ShoppingListItem? foundItem = await dbContext.ShoppingItems.FindAsync(itemId);
+        ShoppingListItem? foundItem = await dbContext.ShoppingListItems.FindAsync(itemId);
 
         if (foundItem != null)
         {
-            dbContext.ShoppingItems.Remove(foundItem);
+            dbContext.ShoppingListItems.Remove(foundItem);
             await dbContext.SaveChangesAsync();
         }
 
