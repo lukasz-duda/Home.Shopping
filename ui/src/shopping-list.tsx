@@ -19,6 +19,7 @@ export function ShoppingList() {
   useEffect(() => {
     const connection = new signalR.HubConnectionBuilder()
       .withUrl(`${apiUrl}/shopping`)
+      .withAutomaticReconnect()
       .build();
 
     connectionRef.current = connection;
@@ -52,7 +53,10 @@ export function ShoppingList() {
 
   function mapItem(item: ShoppingListItem) {
     return (
-      <Flex justify="space-between">
+      <Flex
+        justify="space-between"
+        style={{ margin: 12 }}
+      >
         {item.name}
         <DeleteOutlined onClick={() => removeItem(item.id)} />
       </Flex>
@@ -71,7 +75,10 @@ export function ShoppingList() {
 
   return (
     <Card title={shoppingPlanning.title}>
-      <Flex vertical gap={16}>
+      <Flex
+        vertical
+        gap={16}
+      >
         <Form layout="vertical">
           <TextField
             value={itemName}
@@ -81,7 +88,10 @@ export function ShoppingList() {
           <Button onClick={addItem}>{shoppingPlanning.addItem}</Button>
         </Form>
 
-        <Tree treeData={treeData} blockNode />
+        <Tree
+          treeData={treeData}
+          blockNode
+        />
       </Flex>
     </Card>
   );
