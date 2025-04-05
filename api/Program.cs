@@ -42,7 +42,8 @@ app.MapGet("/", () => "Home.Shopping")
     .WithName("GetName")
     .WithOpenApi();
 
-app.MapHub<ShoppingHub>("/shopping");
+app.MapHub<ShoppingHub>("/shopping")
+    .RequireAuthorization();
 
 app.UseCors();
 
