@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { DeleteOutlined } from "@ant-design/.icons-x4bNdnmP";
 import * as signalR from "@microsoft/signalr";
-import { Button, Card, Flex, Form, Tree } from "antd";
+import { Button, Card, Flex, Form, Tree, message } from "antd";
 import { TextField } from "home-shared-ui";
 import { polishLocale } from "./locale";
 import { ShoppingListItem } from "./model";
@@ -14,6 +14,31 @@ export function ShoppingList() {
 
   const [items, setItems] = useState<ShoppingListItem[]>([]);
 
+  const { shoppingPlanning } = polishLocale;
+
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const refreshItems = useCallback(
+    function () {
+      connectionRef.current
+        ?.invoke("GetItems")
+        .then((items: ShoppingListItem[]) => {
+          setItems(items);
+          messageApi.info(shoppingPlanning.itemsRefreshed);
+        });
+    },
+    [messageApi, shoppingPlanning.itemsRefreshed],
+  );
+
+  function itemAdded(item: ShoppingListItem) {
+    setItems((prevItems) => [...prevItems, item]);
+    setItemName(null);
+  }
+
+  function itemRemoved(itemId: string) {
+    setItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
+  }
+
   const connectionRef = useRef<signalR.HubConnection | null>(null);
 
   useEffect(() => {
@@ -24,25 +49,15 @@ export function ShoppingList() {
 
     connectionRef.current = connection;
 
-    connection.start().then(() => {
-      connection.invoke("GetItems").then((items: ShoppingListItem[]) => {
-        setItems(items);
-      });
-
-      connection.on("ItemAdded", (item: ShoppingListItem) => {
-        setItems((prevItems) => [...prevItems, item]);
-        setItemName(null);
-      });
-
-      connection.on("ItemRemoved", (itemId: string) => {
-        setItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
-      });
-    });
+    connection.start().then(refreshItems);
+    connection.onreconnected(refreshItems);
+    connection.on("ItemAdded", itemAdded);
+    connection.on("ItemRemoved", itemRemoved);
 
     return () => {
       connection.stop();
     };
-  }, []);
+  }, [refreshItems]);
 
   const treeData = items.map((item) => {
     return {
@@ -71,21 +86,23 @@ export function ShoppingList() {
     connectionRef.current?.invoke("RemoveItem", itemId);
   }
 
-  const { shoppingPlanning } = polishLocale;
-
   return (
     <Card title={shoppingPlanning.title}>
+      {contextHolder}
       <Flex
         vertical
         gap={16}
       >
-        <Form layout="vertical">
+        <Form
+          layout="vertical"
+          onFinish={addItem}
+        >
           <TextField
             value={itemName}
             onChange={setItemName}
             label={shoppingPlanning.item}
           />
-          <Button onClick={addItem}>{shoppingPlanning.addItem}</Button>
+          <Button htmlType="submit">{shoppingPlanning.addItem}</Button>
         </Form>
 
         <Tree

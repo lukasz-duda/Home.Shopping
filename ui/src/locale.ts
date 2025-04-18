@@ -3,5 +3,6 @@ export const polishLocale = {
     title: "Planowanie zakupów",
     item: "Przedmiot",
     addItem: "Dodaj",
+    itemsRefreshed: "Lista zakupów została odświeżona",
   },
 };
