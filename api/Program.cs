@@ -48,6 +48,14 @@ app.MapGet("/", () => "Home.Shopping")
     .WithName("GetName")
     .WithOpenApi();
 
+app.MapGet("/user", (HttpContext context) =>
+{
+    var user = new User { Authenticated = context.User.Identity?.IsAuthenticated ?? false };
+    return TypedResults.Ok(user);
+})
+    .WithName("GetUser")
+    .WithOpenApi();
+
 app.MapHub<ShoppingHub>("/shopping")
     .RequireAuthorization();
 
