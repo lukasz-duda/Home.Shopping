@@ -1,4 +1,5 @@
 using Home.Shopping;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +24,11 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddProblemDetails();
+
+var keysPath = new DirectoryInfo(builder.Configuration.GetDataProtectionKeysPath());
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(keysPath)
+    .SetApplicationName("Home");
 
 builder.Services.AddSignalR();
 
