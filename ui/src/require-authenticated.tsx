@@ -1,25 +1,19 @@
-import { PropsWithChildren, useState } from "react";
+import { ReactNode, useEffect } from "react";
 import { polishLocale } from "./locale";
-import { useQuery } from "./query";
-import { getUser } from "./user";
+import { useUser } from "./user";
 
 const loginUrl = import.meta.env.VITE_LOGIN_URL;
 
 const { shoppingPlanning } = polishLocale;
 
-export function RequireAuthenticated({ children }: PropsWithChildren) {
-  const [authenticated, setAuthenticated] = useState(false);
+export function RequireAuthenticated({ children }: { children: ReactNode }) {
+  const { authenticated } = useUser();
 
-  useQuery({
-    query: getUser,
-    onSuccess: (user) => {
-      if (user.authenticated) {
-        setAuthenticated(true);
-      } else {
-        window.location.href = `${loginUrl}?redirect=${window.location.href}`;
-      }
-    },
-  });
+  useEffect(() => {
+    if (authenticated === false) {
+      window.location.href = `${loginUrl}?redirect=${window.location.href}`;
+    }
+  }, [authenticated]);
 
   return authenticated ? children : <>{shoppingPlanning.loading}</>;
 }
