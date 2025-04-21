@@ -12,7 +12,7 @@ export function RequireAuthenticated({ children }: PropsWithChildren) {
   useEffect(() => {
     getUser().then((currentUser) => {
       if (!currentUser.authenticated) {
-        window.location.href = loginUrl;
+        window.location.href = `${loginUrl}?redirect=${window.location.href}`;
       } else {
         setAuthenticated(true);
       }
