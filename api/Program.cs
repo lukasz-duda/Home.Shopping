@@ -1,5 +1,6 @@
 using Home.Shopping;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,7 +12,10 @@ string connectionString = builder.Configuration.GetConnectionString();
 builder.Services.AddDbContext<ShoppingDbContext>(options => options.UseMySQL(connectionString));
 
 builder.Services.AddAuthentication()
-    .AddCookie();
+    .AddCookie(IdentityConstants.ApplicationScheme, options =>
+    {
+        options.Cookie.Name = "Home.Identity";
+    });
 builder.Services.AddAuthorization();
 
 builder.Services.AddCors(options =>
@@ -50,7 +54,11 @@ app.MapGet("/", () => "Home.Shopping")
 
 app.MapGet("/user", (HttpContext context) =>
 {
-    var user = new User { Authenticated = context.User.Identity?.IsAuthenticated ?? false };
+    var user = new User
+    {
+        Authenticated = context.User.Identity?.IsAuthenticated ?? false,
+        Name = context.User.Identity?.Name ?? ""
+    };
     return TypedResults.Ok(user);
 })
     .WithName("GetUser")

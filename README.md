@@ -1,7 +1,7 @@
 # Home Shopping
 
-shopping-ui: http://localhost:3002
-shopping-api: http://localhost:5002/swagger
+- shopping-ui: http://localhost:3002
+- shopping-api: http://localhost:5002/swagger
 
 ## Environments
 
@@ -13,10 +13,11 @@ Requirements:
 
 ### Development
 
+Start [infrastructure](https://github.com/lukasz-duda/Home.Modules).
+
 Start shopping-api:
 
 ```bash
-docker compose up -d database --remove-orphans
 dotnet run --project api/Home.Shopping.csproj
 ```
 
@@ -31,8 +32,10 @@ npm run dev
 
 ### Docker
 
-Start:
+Start [infrastructure](https://github.com/lukasz-duda/Home.Modules).
+
+Start shopping-api and shopping-ui:
 
 ```bash
-docker compose up -d --build --remove-orphans --build
+docker compose up -d --build --remove-orphans
 ```

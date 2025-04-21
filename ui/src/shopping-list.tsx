@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { DeleteOutlined } from "@ant-design/.icons-x4bNdnmP";
+import { DeleteOutlined } from "@ant-design/icons";
 import * as signalR from "@microsoft/signalr";
 import { Button, Card, Flex, Form, Tree, message } from "antd";
 import { TextField } from "home-shared-ui";
