@@ -38,6 +38,8 @@ builder.Services.AddSignalR();
 
 var app = builder.Build();
 
+app.UseCors();
+
 app.UseSwagger();
 app.UseSwaggerUI();
 
@@ -65,7 +67,6 @@ app.MapGet("/user", (HttpContext context) =>
 app.MapHub<ShoppingHub>("/shopping")
     .RequireAuthorization();
 
-app.UseCors();
 
 await app.UpdateDatabaseAsync();
 
