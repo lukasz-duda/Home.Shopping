@@ -5,10 +5,20 @@ export interface UseQueryProps<TResult> {
   onSuccess: (result: TResult) => void;
 }
 
+export interface UseQueryResult {
+  reload: () => void;
+}
+
 export function useQuery<TResult>({
   query,
   onSuccess,
-}: UseQueryProps<TResult>) {
+}: UseQueryProps<TResult>): UseQueryResult {
+  function reload() {
+    query().then((result) => {
+      onSuccess(result);
+    });
+  }
+
   useEffect(() => {
     let ignore = false;
     query().then((result) => {
@@ -23,4 +33,10 @@ export function useQuery<TResult>({
       ignore = true;
     };
   }, [onSuccess, query]);
+
+  const result: UseQueryResult = {
+    reload,
+  };
+
+  return result;
 }

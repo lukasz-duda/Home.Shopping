@@ -3,7 +3,7 @@ import { Layout } from "antd";
 import "./app.css";
 import { RequireAuthenticated } from "./require-authenticated";
 import { ShoppingList } from "./shopping-list";
-import { UserProvider } from "./user";
+import { UserProvider } from "./user-provider";
 
 const { Content } = Layout;
 

@@ -1,6 +1,7 @@
+import { Card, Flex, Skeleton } from "antd";
 import { ReactNode, useEffect } from "react";
 import { polishLocale } from "./locale";
-import { useUser } from "./user";
+import { useUser } from "./use-user";
 
 const loginUrl = import.meta.env.VITE_LOGIN_URL;
 
@@ -15,5 +16,20 @@ export function RequireAuthenticated({ children }: { children: ReactNode }) {
     }
   }, [authenticated]);
 
-  return authenticated ? children : <>{shoppingPlanning.loading}</>;
+  return authenticated ? (
+    children
+  ) : (
+    <Flex
+      justify="center"
+      align="center"
+      style={{ height: "100vh" }}
+    >
+      <Card
+        title={shoppingPlanning.loading}
+        style={{ width: 300 }}
+      >
+        <Skeleton active />
+      </Card>
+    </Flex>
+  );
 }
