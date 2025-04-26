@@ -97,7 +97,9 @@ export function ShoppingList() {
     };
   }, [refreshItems]);
 
-  const itemsNotInCart = items.filter((item) => !item.inShoppingCart);
+  const itemsNotInCart = [...items]
+    .filter((item) => !item.inShoppingCart)
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   const treeItemsNotInCart = itemsNotInCart.map((item) => {
     return {
@@ -118,7 +120,12 @@ export function ShoppingList() {
     );
   }
 
-  const itemsInCart = items.filter((item) => item.inShoppingCart);
+  const itemsInCart = [...items]
+    .filter((item) => item.inShoppingCart)
+    .sort(
+      (a, b) =>
+        `${a.timeAddedToCart}`.localeCompare(`${b.timeAddedToCart}`) * -1,
+    );
 
   const treeItemsInCart = itemsInCart.map((item) => {
     return {
