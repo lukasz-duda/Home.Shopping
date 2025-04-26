@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Home.Shopping;
 
@@ -24,16 +25,46 @@ public class ShoppingHub : Hub
         await Clients.All.SendAsync("ItemAdded", item);
     }
 
-    public async Task RemoveItem(Guid itemId, ShoppingDbContext dbContext)
+    public async Task AddToCart(Guid itemId, ShoppingDbContext dbContext)
     {
         ShoppingListItem? foundItem = await dbContext.ShoppingListItems.FindAsync(itemId);
 
         if (foundItem != null)
         {
-            dbContext.ShoppingListItems.Remove(foundItem);
+            foundItem.InShoppingCart = true;
+            foundItem.TimeAddedToCart = DateTime.UtcNow;
+            foundItem.AddedToCartBy = Context.User?.Identity?.Name;
             await dbContext.SaveChangesAsync();
+            await Clients.All.SendAsync("ItemAddedToCart", foundItem);
         }
 
-        await Clients.All.SendAsync("ItemRemoved", itemId);
+    }
+
+    public async Task RemoveFromCart(Guid itemId, ShoppingDbContext dbContext)
+    {
+        ShoppingListItem? foundItem = await dbContext.ShoppingListItems.FindAsync(itemId);
+
+        if (foundItem != null)
+        {
+            foundItem.InShoppingCart = false;
+            foundItem.TimeAddedToCart = null;
+            foundItem.AddedToCartBy = null;
+            await dbContext.SaveChangesAsync();
+            await Clients.All.SendAsync("ItemRemovedFromCart", foundItem);
+        }
+
+    }
+
+    public async Task FinishShopping(ShoppingDbContext dbContext)
+    {
+        var itemsInShoppingCart = await dbContext.ShoppingListItems.Where(item => item.InShoppingCart).ToListAsync();
+
+        foreach (var item in itemsInShoppingCart)
+        {
+            dbContext.ShoppingListItems.Remove(item);
+        }
+        await dbContext.SaveChangesAsync();
+
+        await Clients.All.SendAsync("ShoppingFinished");
     }
 }

@@ -1,8 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { DeleteOutlined } from "@ant-design/icons";
+import {
+  CheckOutlined,
+  ShoppingCartOutlined,
+  UndoOutlined,
+} from "@ant-design/icons";
 import * as signalR from "@microsoft/signalr";
-import { Button, Card, Flex, Form, Tree, message } from "antd";
+import { Button, Card, Flex, Form, Space, Tree, message } from "antd";
 import { TextField } from "home-shared-ui";
 import { polishLocale } from "./locale";
 import { ShoppingListItem } from "./model";
@@ -30,13 +34,45 @@ export function ShoppingList() {
     [messageApi, shoppingPlanning.itemsRefreshed],
   );
 
+  function addItem() {
+    connectionRef.current?.invoke("AddItem", itemName);
+  }
+
   function itemAdded(item: ShoppingListItem) {
     setItems((prevItems) => [...prevItems, item]);
     setItemName(null);
   }
 
-  function itemRemoved(itemId: string) {
-    setItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
+  function addToCart(itemId: string) {
+    connectionRef.current?.invoke("AddToCart", itemId);
+  }
+
+  function itemAddedToCart(updatedItem: ShoppingListItem) {
+    setItems((prevItems) =>
+      prevItems.map((prevItem) => {
+        return prevItem.id === updatedItem.id ? updatedItem : prevItem;
+      }),
+    );
+  }
+
+  function removeFromCart(itemId: string) {
+    connectionRef.current?.invoke("RemoveFromCart", itemId);
+  }
+
+  function itemRemovedFromCart(updatedItem: ShoppingListItem) {
+    setItems((prevItems) =>
+      prevItems.map((prevItem) => {
+        return prevItem.id === updatedItem.id ? updatedItem : prevItem;
+      }),
+    );
+  }
+
+  function finishShopping() {
+    connectionRef.current?.invoke("FinishShopping");
+  }
+
+  function shoppingFinished() {
+    setItems((prevItems) => prevItems.filter((item) => !item.inShoppingCart));
   }
 
   const connectionRef = useRef<signalR.HubConnection | null>(null);
@@ -52,47 +88,70 @@ export function ShoppingList() {
     connection.start().then(refreshItems);
     connection.onreconnected(refreshItems);
     connection.on("ItemAdded", itemAdded);
-    connection.on("ItemRemoved", itemRemoved);
+    connection.on("ItemAddedToCart", itemAddedToCart);
+    connection.on("ItemRemovedFromCart", itemRemovedFromCart);
+    connection.on("ShoppingFinished", shoppingFinished);
 
     return () => {
       connection.stop();
     };
   }, [refreshItems]);
 
-  const treeData = items.map((item) => {
+  const itemsNotInCart = items.filter((item) => !item.inShoppingCart);
+
+  const treeItemsNotInCart = itemsNotInCart.map((item) => {
     return {
-      title: mapItem(item),
+      title: mapTreeItemNotInCart(item),
       key: item.id,
     };
   });
 
-  function mapItem(item: ShoppingListItem) {
+  function mapTreeItemNotInCart(item: ShoppingListItem) {
     return (
       <Flex
         justify="space-between"
         style={{ margin: 12 }}
       >
         {item.name}
-        <DeleteOutlined onClick={() => removeItem(item.id)} />
+        <ShoppingCartOutlined onClick={() => addToCart(item.id)} />
       </Flex>
     );
   }
 
-  function addItem() {
-    connectionRef.current?.invoke("AddItem", itemName);
-  }
+  const itemsInCart = items.filter((item) => item.inShoppingCart);
 
-  function removeItem(itemId: string) {
-    connectionRef.current?.invoke("RemoveItem", itemId);
+  const treeItemsInCart = itemsInCart.map((item) => {
+    return {
+      title: mapTreeItemInCart(item),
+      key: item.id,
+    };
+  });
+
+  function mapTreeItemInCart(item: ShoppingListItem) {
+    return (
+      <Flex
+        justify="space-between"
+        style={{ margin: 12 }}
+      >
+        <Space size="middle">
+          {item.name}
+          <ShoppingCartOutlined />
+          {item.timeAddedToCart &&
+            new Date(item.timeAddedToCart).toLocaleTimeString()}{" "}
+          {item.addedToCartBy}
+        </Space>
+        <UndoOutlined onClick={() => removeFromCart(item.id)} />
+      </Flex>
+    );
   }
 
   return (
-    <Card title={shoppingPlanning.title}>
+    <Flex
+      vertical
+      gap={16}
+    >
       {contextHolder}
-      <Flex
-        vertical
-        gap={16}
-      >
+      <Card title={shoppingPlanning.title}>
         <Form
           layout="vertical"
           onFinish={addItem}
@@ -104,12 +163,37 @@ export function ShoppingList() {
           />
           <Button htmlType="submit">{shoppingPlanning.addItem}</Button>
         </Form>
+      </Card>
 
+      <Card title={shoppingPlanning.shoppingList}>
         <Tree
-          treeData={treeData}
+          treeData={treeItemsNotInCart}
           blockNode
         />
-      </Flex>
-    </Card>
+      </Card>
+
+      <Card title={shoppingPlanning.itemsInCart}>
+        <Flex
+          vertical
+          gap={16}
+        >
+          <Tree
+            treeData={treeItemsInCart}
+            blockNode
+          />
+          {itemsInCart && (
+            <Space>
+              <Button
+                type="primary"
+                icon={<CheckOutlined />}
+                onClick={finishShopping}
+              >
+                {shoppingPlanning.finishShopping}
+              </Button>
+            </Space>
+          )}
+        </Flex>
+      </Card>
+    </Flex>
   );
 }
