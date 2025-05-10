@@ -145,7 +145,7 @@ export function ShoppingList() {
           <ShoppingCartOutlined />
           {item.timeAddedToCart &&
             new Date(item.timeAddedToCart).toLocaleTimeString()}{" "}
-          {item.addedToCartBy}
+          {item.addedToCartBy?.charAt(0).toUpperCase()}
         </Space>
         <UndoOutlined onClick={() => removeFromCart(item.id)} />
       </Flex>
