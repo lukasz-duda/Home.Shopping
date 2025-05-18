@@ -56,7 +56,6 @@ app.MapGet("/user", (HttpContext context) =>
 {
     var user = new User
     {
-        Authenticated = context.User.Identity?.IsAuthenticated ?? false,
         Name = context.User.Identity?.Name ?? ""
     };
     return TypedResults.Ok(user);
