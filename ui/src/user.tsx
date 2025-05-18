@@ -1,5 +1,10 @@
+export type AuthenticationStatus =
+  | "loading"
+  | "authenticated"
+  | "unauthenticated";
+
 export interface User {
-  authenticated: boolean | null;
+  status: AuthenticationStatus;
   name: string;
 }
 
@@ -12,11 +17,25 @@ export async function getUser(): Promise<User> {
     credentials: "include",
   });
 
-  const responseJson = await httpResponse.json();
-  return responseJson as User;
+  const apiUser = (await httpResponse.json()) as ApiUser;
+
+  const user: User = {
+    status: apiUser.name ? "authenticated" : "unauthenticated",
+    name: apiUser.name,
+  };
+
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(user);
+    }, 1000);
+  });
+}
+
+interface ApiUser {
+  name: string;
 }
 
 export const loadingUser: User = {
-  authenticated: null,
+  status: "loading",
   name: "",
 };
