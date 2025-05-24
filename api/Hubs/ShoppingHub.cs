@@ -25,6 +25,17 @@ public class ShoppingHub(ShoppingDbContext dbContext) : Hub
         await Clients.All.SendAsync("ItemAdded", item);
     }
 
+    public async Task RemoveItem(Guid itemId)
+    {
+        ShoppingListItem? foundItem = await dbContext.ShoppingListItems.FindAsync(itemId);
+
+        if (foundItem != null)
+        {
+            dbContext.ShoppingListItems.Remove(foundItem);
+            await Clients.All.SendAsync("ItemRemoved", itemId);
+        }
+    }
+
     public async Task AddToCart(Guid itemId)
     {
         ShoppingListItem? foundItem = await dbContext.ShoppingListItems.FindAsync(itemId);
@@ -37,7 +48,6 @@ public class ShoppingHub(ShoppingDbContext dbContext) : Hub
             await dbContext.SaveChangesAsync();
             await Clients.All.SendAsync("ItemAddedToCart", foundItem);
         }
-
     }
 
     public async Task RemoveFromCart(Guid itemId)
@@ -52,7 +62,6 @@ public class ShoppingHub(ShoppingDbContext dbContext) : Hub
             await dbContext.SaveChangesAsync();
             await Clients.All.SendAsync("ItemRemovedFromCart", foundItem);
         }
-
     }
 
     public async Task FinishShopping()

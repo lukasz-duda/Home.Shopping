@@ -14,6 +14,7 @@ export interface ShoppingProps {
 export interface Shopping {
   items: ShoppingListItem[];
   addItem: (itemName: string) => void;
+  removeItem: (itemid: string) => void;
   addToCart: (itemId: string) => void;
   removeFromCart: (itemId: string) => void;
   finishShopping: () => void;
@@ -47,6 +48,14 @@ export function useShopping({ onInfo }: ShoppingProps): Shopping {
     },
     [onInfo],
   );
+
+  function removeItem(itemId: string) {
+    connectionRef.current?.invoke("RemoveItem", itemId);
+  }
+
+  function itemRemoved(itemId: string) {
+    setItems((prevItems) => prevItems.filter((item) => item.id === itemId));
+  }
 
   function addToCart(itemId: string) {
     connectionRef.current?.invoke("AddToCart", itemId);
@@ -91,6 +100,7 @@ export function useShopping({ onInfo }: ShoppingProps): Shopping {
     connection.start().then(refreshItems);
     connection.onreconnected(refreshItems);
     connection.on("ItemAdded", itemAdded);
+    connection.on("ItemRemoved", itemRemoved);
     connection.on("ItemAddedToCart", itemAddedToCart);
     connection.on("ItemRemovedFromCart", itemRemovedFromCart);
     connection.on("ShoppingFinished", shoppingFinished);
@@ -103,6 +113,7 @@ export function useShopping({ onInfo }: ShoppingProps): Shopping {
   const result: Shopping = {
     items,
     addItem,
+    removeItem,
     addToCart,
     removeFromCart,
     finishShopping,
