@@ -32,7 +32,20 @@ public class ShoppingHub(ShoppingDbContext dbContext) : Hub
         if (foundItem != null)
         {
             dbContext.ShoppingListItems.Remove(foundItem);
+            await dbContext.SaveChangesAsync();
             await Clients.All.SendAsync("ItemRemoved", itemId);
+        }
+    }
+
+    public async Task ChangeItem(ShoppingListItem changed)
+    {
+        ShoppingListItem? foundItem = await dbContext.ShoppingListItems.FindAsync(changed.Id);
+
+        if (foundItem != null)
+        {
+            foundItem.Name = changed.Name;
+            await dbContext.SaveChangesAsync();
+            await Clients.All.SendAsync("ItemChanged", foundItem);
         }
     }
 

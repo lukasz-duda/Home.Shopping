@@ -12,8 +12,10 @@ export interface ShoppingProps {
 }
 
 export interface Shopping {
+  loading: boolean;
   items: ShoppingListItem[];
   addItem: (itemName: string) => void;
+  changeItem: (changedItem: ShoppingListItem) => void;
   removeItem: (itemid: string) => void;
   addToCart: (itemId: string) => void;
   removeFromCart: (itemId: string) => void;
@@ -21,16 +23,20 @@ export interface Shopping {
 }
 
 export function useShopping({ onInfo }: ShoppingProps): Shopping {
+  const [loading, setLoading] = useState(false);
+
   const [items, setItems] = useState<ShoppingListItem[]>([]);
 
   const connectionRef = useRef<signalR.HubConnection | null>(null);
 
   const refreshItems = useCallback(
     function () {
+      setLoading(true);
       connectionRef.current
         ?.invoke("GetItems")
         .then((items: ShoppingListItem[]) => {
           setItems(items);
+          setLoading(false);
           onInfo(shoppingPlanning.itemsRefreshed);
         });
     },
@@ -57,6 +63,18 @@ export function useShopping({ onInfo }: ShoppingProps): Shopping {
     setItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
   }
 
+  function changeItem(changedItem: ShoppingListItem) {
+    connectionRef.current?.invoke("ChangeItem", changedItem);
+  }
+
+  const itemChanged = useCallback(
+    function (updatedItem: ShoppingListItem) {
+      updateItem(updatedItem);
+      onInfo(shoppingPlanning.itemChanged);
+    },
+    [onInfo],
+  );
+
   function addToCart(itemId: string) {
     connectionRef.current?.invoke("AddToCart", itemId);
   }
@@ -73,7 +91,7 @@ export function useShopping({ onInfo }: ShoppingProps): Shopping {
     connectionRef.current?.invoke("RemoveFromCart", itemId);
   }
 
-  function itemRemovedFromCart(updatedItem: ShoppingListItem) {
+  function updateItem(updatedItem: ShoppingListItem) {
     setItems((prevItems) =>
       prevItems.map((prevItem) => {
         return prevItem.id === updatedItem.id ? updatedItem : prevItem;
@@ -101,18 +119,21 @@ export function useShopping({ onInfo }: ShoppingProps): Shopping {
     connection.onreconnected(refreshItems);
     connection.on("ItemAdded", itemAdded);
     connection.on("ItemRemoved", itemRemoved);
+    connection.on("ItemChanged", itemChanged);
     connection.on("ItemAddedToCart", itemAddedToCart);
-    connection.on("ItemRemovedFromCart", itemRemovedFromCart);
+    connection.on("ItemRemovedFromCart", updateItem);
     connection.on("ShoppingFinished", shoppingFinished);
 
     return () => {
       connection.stop();
     };
-  }, [itemAdded, refreshItems]);
+  }, [itemAdded, itemChanged, refreshItems]);
 
   const result: Shopping = {
+    loading,
     items,
     addItem,
+    changeItem,
     removeItem,
     addToCart,
     removeFromCart,

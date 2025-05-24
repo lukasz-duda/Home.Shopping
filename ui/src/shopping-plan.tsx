@@ -1,5 +1,9 @@
-import { DeleteOutlined } from "@ant-design/icons";
-import { Button, Card, Flex, Form, Tree } from "antd";
+import {
+  DeleteOutlined,
+  FileAddOutlined,
+  SaveOutlined,
+} from "@ant-design/icons";
+import { Button, Card, Flex, Form, Modal, Tree } from "antd";
 import { TextField } from "home-shared-ui";
 import { useState } from "react";
 import { polishLocale } from "./locale";
@@ -26,6 +30,10 @@ export function ShoppingPlan({ shopping }: ShoppingPlanProps) {
     a.name.localeCompare(b.name),
   );
 
+  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+
+  const [selectedItemName, setSelectedItemName] = useState<string | null>(null);
+
   const treeItems = itemsSorted.map((item) => {
     return {
       title: mapTreeItem(item),
@@ -39,11 +47,33 @@ export function ShoppingPlan({ shopping }: ShoppingPlanProps) {
         justify="space-between"
         style={{ margin: 12 }}
       >
-        {item.name}
+        <div
+          style={{ width: "100%" }}
+          onClick={() => {
+            setSelectedItemId(item.id);
+            setSelectedItemName(item.name);
+          }}
+        >
+          {item.name}
+        </div>
+
         <DeleteOutlined onClick={() => shopping.removeItem(item.id)} />
       </Flex>
     );
   }
+  const selectedItem = shopping.items.find(
+    (item) => item.id === selectedItemId,
+  );
+
+  function changeSelectedItem() {
+    if (selectedItem && selectedItemName) {
+      shopping.changeItem({ ...selectedItem, name: selectedItemName });
+      setSelectedItemId(null);
+      setSelectedItemName(null);
+    }
+  }
+
+  const itemSelected = selectedItemId !== null;
 
   return (
     <>
@@ -57,15 +87,43 @@ export function ShoppingPlan({ shopping }: ShoppingPlanProps) {
             onChange={setItemName}
             label={shoppingPlanning.item}
           />
-          <Button htmlType="submit">{shoppingPlanning.addItem}</Button>
+          <Button
+            htmlType="submit"
+            type="primary"
+            icon={<FileAddOutlined />}
+          >
+            {shoppingPlanning.addItem}
+          </Button>
         </Form>
       </Card>
-      <Card title={shoppingPlanning.shoppingList}>
+      <Card
+        title={shoppingPlanning.shoppingList}
+        loading={shopping.loading}
+      >
         <Tree
           treeData={treeItems}
           blockNode
         />
       </Card>
+      <Modal
+        title={shoppingPlanning.changeItem}
+        open={itemSelected}
+        okText={shoppingPlanning.saveChanges}
+        okButtonProps={{ icon: <SaveOutlined /> }}
+        onOk={changeSelectedItem}
+        onCancel={() => setSelectedItemId(null)}
+      >
+        <Form
+          layout="vertical"
+          onFinish={changeSelectedItem}
+        >
+          <TextField
+            label="Przedmiot"
+            value={selectedItemName}
+            onChange={setSelectedItemName}
+          />
+        </Form>
+      </Modal>
     </>
   );
 }

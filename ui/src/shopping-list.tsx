@@ -74,13 +74,19 @@ export function ShoppingList({ shopping }: ShoppingListProps) {
 
   return (
     <>
-      <Card title={shoppingPlanning.shoppingList}>
+      <Card
+        title={shoppingPlanning.shoppingList}
+        loading={shopping.loading}
+      >
         <Tree
           treeData={treeItemsNotInCart}
           blockNode
         />
       </Card>
-      <Card title={shoppingPlanning.itemsInCart}>
+      <Card
+        title={shoppingPlanning.itemsInCart}
+        loading={shopping.loading}
+      >
         <Flex
           vertical
           gap={16}
