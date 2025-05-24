@@ -1,5 +1,4 @@
 import { Flex, Spin } from "antd";
-import { theme } from "./theme";
 
 export function LoadingIndicator() {
   return (
@@ -12,7 +11,6 @@ export function LoadingIndicator() {
         left: 0,
         right: 0,
         bottom: 0,
-        background: theme.background,
       }}
     >
       <Spin size="large" />

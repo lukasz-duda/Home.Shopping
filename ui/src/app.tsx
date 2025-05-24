@@ -3,7 +3,6 @@ import { Layout } from "antd";
 import "./app.css";
 import { RequireAuthenticated } from "./require-authenticated";
 import { ShoppingList } from "./shopping-list";
-import { theme } from "./theme";
 import { UserProvider } from "./user-provider";
 
 const { Content } = Layout;
@@ -11,11 +10,7 @@ const { Content } = Layout;
 export default function App() {
   return (
     <Layout style={{ height: "100vh" }}>
-      <Content
-        style={{
-          background: theme.background,
-        }}
-      >
+      <Content>
         <UserProvider>
           <RequireAuthenticated>
             <ShoppingList />
