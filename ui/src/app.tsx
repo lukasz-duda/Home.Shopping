@@ -2,7 +2,7 @@ import "@ant-design/v5-patch-for-react-19";
 import { Layout } from "antd";
 import "./app.css";
 import { RequireAuthenticated } from "./require-authenticated";
-import { ShoppingList } from "./shopping-list";
+import { ShoppingApplication } from "./shopping-application";
 import { UserProvider } from "./user-provider";
 
 const { Content } = Layout;
@@ -13,7 +13,7 @@ export default function App() {
       <Content>
         <UserProvider>
           <RequireAuthenticated>
-            <ShoppingList />
+            <ShoppingApplication />
           </RequireAuthenticated>
         </UserProvider>
       </Content>

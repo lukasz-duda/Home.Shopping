@@ -1,101 +1,21 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-
 import {
   CheckOutlined,
   ShoppingCartOutlined,
   UndoOutlined,
 } from "@ant-design/icons";
-import * as signalR from "@microsoft/signalr";
-import { Button, Card, Flex, Form, Space, Tree, message } from "antd";
-import { TextField } from "home-shared-ui";
+import { Button, Card, Flex, Space, Tree } from "antd";
 import { polishLocale } from "./locale";
 import { ShoppingListItem } from "./model";
+import { Shopping } from "./use-shopping";
 
-const apiUrl = import.meta.env.VITE_API_URL;
+export interface ShoppingListProps {
+  shopping: Shopping;
+}
 
-export function ShoppingList() {
-  const [itemName, setItemName] = useState<string | null>(null);
-
-  const [items, setItems] = useState<ShoppingListItem[]>([]);
+export function ShoppingList({ shopping }: ShoppingListProps) {
+  const { items, addToCart, removeFromCart, finishShopping } = shopping;
 
   const { shoppingPlanning } = polishLocale;
-
-  const [messageApi, contextHolder] = message.useMessage();
-
-  const refreshItems = useCallback(
-    function () {
-      connectionRef.current
-        ?.invoke("GetItems")
-        .then((items: ShoppingListItem[]) => {
-          setItems(items);
-          messageApi.info(shoppingPlanning.itemsRefreshed);
-        });
-    },
-    [messageApi, shoppingPlanning.itemsRefreshed],
-  );
-
-  function addItem() {
-    connectionRef.current?.invoke("AddItem", itemName);
-  }
-
-  function itemAdded(item: ShoppingListItem) {
-    setItems((prevItems) => [...prevItems, item]);
-    setItemName(null);
-  }
-
-  function addToCart(itemId: string) {
-    connectionRef.current?.invoke("AddToCart", itemId);
-  }
-
-  function itemAddedToCart(updatedItem: ShoppingListItem) {
-    setItems((prevItems) =>
-      prevItems.map((prevItem) => {
-        return prevItem.id === updatedItem.id ? updatedItem : prevItem;
-      }),
-    );
-  }
-
-  function removeFromCart(itemId: string) {
-    connectionRef.current?.invoke("RemoveFromCart", itemId);
-  }
-
-  function itemRemovedFromCart(updatedItem: ShoppingListItem) {
-    setItems((prevItems) =>
-      prevItems.map((prevItem) => {
-        return prevItem.id === updatedItem.id ? updatedItem : prevItem;
-      }),
-    );
-  }
-
-  function finishShopping() {
-    connectionRef.current?.invoke("FinishShopping");
-  }
-
-  function shoppingFinished() {
-    setItems((prevItems) => prevItems.filter((item) => !item.inShoppingCart));
-  }
-
-  const connectionRef = useRef<signalR.HubConnection | null>(null);
-
-  useEffect(() => {
-    const connection = new signalR.HubConnectionBuilder()
-      .withUrl(`${apiUrl}/shopping`)
-      .withAutomaticReconnect()
-      .build();
-
-    connectionRef.current = connection;
-
-    connection.start().then(refreshItems);
-    connection.onreconnected(refreshItems);
-    connection.on("ItemAdded", itemAdded);
-    connection.on("ItemAddedToCart", itemAddedToCart);
-    connection.on("ItemRemovedFromCart", itemRemovedFromCart);
-    connection.on("ShoppingFinished", shoppingFinished);
-
-    return () => {
-      connection.stop();
-    };
-  }, [refreshItems]);
 
   const itemsNotInCart = [...items]
     .filter((item) => !item.inShoppingCart)
@@ -153,32 +73,13 @@ export function ShoppingList() {
   }
 
   return (
-    <Flex
-      vertical
-      gap={16}
-    >
-      {contextHolder}
-      <Card title={shoppingPlanning.title}>
-        <Form
-          layout="vertical"
-          onFinish={addItem}
-        >
-          <TextField
-            value={itemName}
-            onChange={setItemName}
-            label={shoppingPlanning.item}
-          />
-          <Button htmlType="submit">{shoppingPlanning.addItem}</Button>
-        </Form>
-      </Card>
-
+    <>
       <Card title={shoppingPlanning.shoppingList}>
         <Tree
           treeData={treeItemsNotInCart}
           blockNode
         />
       </Card>
-
       <Card title={shoppingPlanning.itemsInCart}>
         <Flex
           vertical
@@ -201,6 +102,6 @@ export function ShoppingList() {
           )}
         </Flex>
       </Card>
-    </Flex>
+    </>
   );
 }
