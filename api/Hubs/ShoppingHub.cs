@@ -3,15 +3,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Home.Shopping;
 
-public class ShoppingHub : Hub
+public class ShoppingHub(ShoppingDbContext dbContext) : Hub
 {
-    public List<ShoppingListItem> GetItems(ShoppingDbContext dbContext)
+    public List<ShoppingListItem> GetItems()
     {
         List<ShoppingListItem> shoppingList = dbContext.ShoppingListItems.ToList();
         return shoppingList;
     }
 
-    public async Task AddItem(string name, ShoppingDbContext dbContext)
+    public async Task AddItem(string name)
     {
         var item = new ShoppingListItem
         {
@@ -25,7 +25,7 @@ public class ShoppingHub : Hub
         await Clients.All.SendAsync("ItemAdded", item);
     }
 
-    public async Task AddToCart(Guid itemId, ShoppingDbContext dbContext)
+    public async Task AddToCart(Guid itemId)
     {
         ShoppingListItem? foundItem = await dbContext.ShoppingListItems.FindAsync(itemId);
 
@@ -40,7 +40,7 @@ public class ShoppingHub : Hub
 
     }
 
-    public async Task RemoveFromCart(Guid itemId, ShoppingDbContext dbContext)
+    public async Task RemoveFromCart(Guid itemId)
     {
         ShoppingListItem? foundItem = await dbContext.ShoppingListItems.FindAsync(itemId);
 
@@ -55,7 +55,7 @@ public class ShoppingHub : Hub
 
     }
 
-    public async Task FinishShopping(ShoppingDbContext dbContext)
+    public async Task FinishShopping()
     {
         var itemsInShoppingCart = await dbContext.ShoppingListItems.Where(item => item.InShoppingCart).ToListAsync();
 
