@@ -54,7 +54,7 @@ export function useShopping({ onInfo }: ShoppingProps): Shopping {
   }
 
   function itemRemoved(itemId: string) {
-    setItems((prevItems) => prevItems.filter((item) => item.id === itemId));
+    setItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
   }
 
   function addToCart(itemId: string) {
