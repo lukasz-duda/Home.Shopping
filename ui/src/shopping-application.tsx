@@ -13,7 +13,7 @@ export function ShoppingApplication() {
   const shopping = useShopping({ onInfo: messageApi.info });
 
   const [selectedView, setSelectedView] =
-    useState<ShoppingView>("shoppingPlan");
+    useState<ShoppingView>("shoppingList");
 
   function handleMenuClick(info: { key: string }) {
     setSelectedView(info.key as ShoppingView);

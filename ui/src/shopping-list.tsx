@@ -4,6 +4,7 @@ import {
   UndoOutlined,
 } from "@ant-design/icons";
 import { Button, Card, Flex, Space, Tree } from "antd";
+import { departments, findDepartmentItems } from "./departments";
 import { polishLocale } from "./locale";
 import { ShoppingListItem } from "./model";
 import { Shopping } from "./use-shopping";
@@ -21,10 +22,16 @@ export function ShoppingList({ shopping }: ShoppingListProps) {
     .filter((item) => !item.inShoppingCart)
     .sort((a, b) => a.name.localeCompare(b.name));
 
-  const treeItemsNotInCart = itemsNotInCart.map((item) => {
+  const treeItemsNotInCart = departments.map((department) => {
     return {
-      title: mapTreeItemNotInCart(item),
-      key: item.id,
+      title: department,
+      key: department,
+      children: findDepartmentItems(department, itemsNotInCart).map((item) => {
+        return {
+          key: item.id,
+          title: mapTreeItemNotInCart(item),
+        };
+      }),
     };
   });
 
