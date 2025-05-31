@@ -86,6 +86,7 @@ export function ShoppingList({ shopping }: ShoppingListProps) {
         loading={shopping.loading}
       >
         <Tree
+          defaultExpandAll
           treeData={treeItemsNotInCart}
           blockNode
         />
