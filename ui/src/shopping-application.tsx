@@ -1,6 +1,6 @@
 import { ShoppingCartOutlined, UnorderedListOutlined } from "@ant-design/icons";
-import { Flex, Menu, message } from "antd";
-import { useState } from "react";
+import { Flex, Menu, notification } from "antd";
+import { useCallback, useState } from "react";
 import { ShoppingList } from "./shopping-list";
 import { ShoppingPlan } from "./shopping-plan";
 import { useShopping } from "./use-shopping";
@@ -8,9 +8,20 @@ import { useShopping } from "./use-shopping";
 type ShoppingView = "shoppingPlan" | "shoppingList";
 
 export function ShoppingApplication() {
-  const [messageApi, contextHolder] = message.useMessage();
+  const [notificationApi, contextHolder] = notification.useNotification();
 
-  const shopping = useShopping({ onInfo: messageApi.info });
+  const showInfo = useCallback(
+    function (message: string) {
+      notificationApi.info({
+        message,
+        duration: 2,
+        placement: "bottom",
+      });
+    },
+    [notificationApi],
+  );
+
+  const shopping = useShopping({ onInfo: showInfo });
 
   const [selectedView, setSelectedView] =
     useState<ShoppingView>("shoppingList");
