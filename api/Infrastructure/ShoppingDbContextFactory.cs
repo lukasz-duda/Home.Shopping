@@ -1,6 +1,7 @@
-using Home.Shopping;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+
+namespace Home.Shopping.Infrastructure;
 
 public class ShoppingDbContextFactory : IDesignTimeDbContextFactory<ShoppingDbContext>
 {

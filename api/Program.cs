@@ -1,4 +1,6 @@
 using Home.Shopping;
+using Home.Shopping.Api;
+using Home.Shopping.Infrastructure;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -48,20 +50,8 @@ app.UseAuthorization();
 
 app.UseExceptionHandler();
 
-app.MapGet("/", () => "Home.Shopping")
-    .WithName("GetName")
-    .WithOpenApi();
-
-app.MapGet("/user", (HttpContext context) =>
-{
-    var user = new User
-    {
-        Name = context.User.Identity?.Name ?? ""
-    };
-    return TypedResults.Ok(user);
-})
-    .WithName("GetUser")
-    .WithOpenApi();
+app.MapShoppingApi();
+app.MapUserApi();
 
 app.MapHub<ShoppingHub>("/shopping")
     .RequireAuthorization();

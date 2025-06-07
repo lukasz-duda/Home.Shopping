@@ -1,3 +1,5 @@
+using Home.Shopping.Core.Entities;
+using Home.Shopping.Infrastructure;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 

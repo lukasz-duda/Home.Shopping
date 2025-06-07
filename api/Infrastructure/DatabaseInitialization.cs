@@ -1,3 +1,4 @@
+using Home.Shopping.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
 namespace Home.Shopping;
