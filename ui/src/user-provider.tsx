@@ -1,6 +1,6 @@
 import { ReactNode, useCallback, useEffect, useState } from "react";
 import { useQuery } from "./query";
-import { getUser, loadingUser, User } from "./user";
+import { getUser, loadingUser, User } from "./user-api";
 import { UserContext } from "./user-context";
 
 export function UserProvider({ children }: { children: ReactNode }) {

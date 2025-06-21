@@ -2,7 +2,7 @@ namespace Home.Shopping.Core.Entities;
 
 public class MatcherGroup
 {
-    public Guid Id { get; set; }
+    public required Guid Id { get; set; }
 
     public required string Name { get; set; }
 
@@ -13,7 +13,9 @@ public class MatcherGroup
 
 public class MatchFragment
 {
-    public Guid Id { get; set; }
+    public required Guid Id { get; set; }
+
+    public required string Name { get; set; }
 
     public required string MatchString { get; set; }
 

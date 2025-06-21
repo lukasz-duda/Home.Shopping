@@ -53,10 +53,6 @@ app.UseExceptionHandler();
 app.MapShoppingApi();
 app.MapUserApi();
 
-app.MapHub<ShoppingHub>("/shopping")
-    .RequireAuthorization();
-
-
 await app.UpdateDatabaseAsync();
 
 app.Run();

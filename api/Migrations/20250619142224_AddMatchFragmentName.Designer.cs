@@ -3,6 +3,7 @@ using System;
 using Home.Shopping.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Home.Shopping.Migrations
 {
     [DbContext(typeof(ShoppingDbContext))]
-    partial class ShoppingDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250619142224_AddMatchFragmentName")]
+    partial class AddMatchFragmentName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -43,7 +46,7 @@ namespace Home.Shopping.Migrations
 
                     b.HasIndex("MatcherGroupId");
 
-                    b.ToTable("MatchFragment", (string)null);
+                    b.ToTable("MatchFragment");
                 });
 
             modelBuilder.Entity("Home.Shopping.Core.Entities.MatcherGroup", b =>
@@ -61,7 +64,7 @@ namespace Home.Shopping.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MatcherGroups", (string)null);
+                    b.ToTable("MatcherGroups");
                 });
 
             modelBuilder.Entity("Home.Shopping.Core.Entities.ShoppingListItem", b =>
@@ -85,7 +88,7 @@ namespace Home.Shopping.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ShoppingListItems", (string)null);
+                    b.ToTable("ShoppingListItems");
                 });
 
             modelBuilder.Entity("Home.Shopping.Core.Entities.MatchFragment", b =>

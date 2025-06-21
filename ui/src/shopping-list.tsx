@@ -4,44 +4,84 @@ import {
   UndoOutlined,
 } from "@ant-design/icons";
 import { Button, Card, Flex, Space, Tree } from "antd";
-import { departments, findDepartmentItems } from "./departments";
+import { ReactNode } from "react";
+import { JSX } from "react/jsx-dev-runtime";
+import { groupItems } from "./group-items";
+import { Group } from "./groups-api";
 import { polishLocale } from "./locale";
 import { ShoppingListItem } from "./model";
 import { Shopping } from "./use-shopping";
 
 export interface ShoppingListProps {
   shopping: Shopping;
+  groups: Group[];
 }
 
-export function ShoppingList({ shopping }: ShoppingListProps) {
-  const { items, addToCart, removeFromCart, finishShopping } = shopping;
+const { shoppingList } = polishLocale;
 
-  const { shoppingPlanning } = polishLocale;
+interface TreeItem {
+  key: string;
+  title: ReactNode;
+  children?: TreeItem[];
+}
+
+export function ShoppingList({ shopping, groups }: ShoppingListProps) {
+  const { items, addToCart, removeFromCart, finishShopping } = shopping;
 
   const itemsNotInCart = [...items]
     .filter((item) => !item.inShoppingCart)
     .sort((a, b) => a.name.localeCompare(b.name));
 
-  const treeItemsNotInCart = departments.map((department) => {
-    return {
-      title: department,
-      key: department,
-      children: findDepartmentItems(department, itemsNotInCart).map((item) => {
-        return {
-          key: item.id,
-          title: mapTreeItemNotInCart(item),
-        };
-      }),
-    };
-  });
+  const groupItemsResult = groupItems(itemsNotInCart, groups);
 
-  function mapTreeItemNotInCart(item: ShoppingListItem) {
+  const itemsNotInCartGroups: TreeItem[] = groups
+    .map((group) => {
+      const matchedGroup = groupItemsResult.groups.find(
+        (match) => match.group.id === group.id,
+      );
+
+      const groupTreeItem: TreeItem = {
+        key: group.id,
+        title: group.name,
+        children: matchedGroup?.matches.map((matchedItem) => {
+          return {
+            key: matchedItem.item.id,
+            title: mapTreeItemNotInCart(
+              matchedItem.item,
+              matchedItem.fragment.name,
+            ),
+          };
+        }),
+      };
+      return groupTreeItem;
+    })
+    .filter((group) => group.children);
+
+  const itemsNotInCartNotMatched: TreeItem[] = groupItemsResult.items.map(
+    (item) => {
+      const treeItem: TreeItem = {
+        key: item.id,
+        title: mapTreeItemNotInCart(item),
+      };
+      return treeItem;
+    },
+  );
+
+  const treeItemsNotInCart: TreeItem[] = [
+    ...itemsNotInCartGroups,
+    ...itemsNotInCartNotMatched,
+  ];
+
+  function mapTreeItemNotInCart(
+    item: ShoppingListItem,
+    prefix?: string,
+  ): JSX.Element {
     return (
       <Flex
         justify="space-between"
         style={{ margin: 12 }}
       >
-        {item.name}
+        {`${prefix ?? ""} ${item.name}`}
         <ShoppingCartOutlined onClick={() => addToCart(item.id)} />
       </Flex>
     );
@@ -82,7 +122,7 @@ export function ShoppingList({ shopping }: ShoppingListProps) {
   return (
     <>
       <Card
-        title={shoppingPlanning.shoppingList}
+        title={shoppingList.shoppingList}
         loading={shopping.loading}
       >
         <Tree
@@ -92,7 +132,7 @@ export function ShoppingList({ shopping }: ShoppingListProps) {
         />
       </Card>
       <Card
-        title={shoppingPlanning.itemsInCart}
+        title={shoppingList.itemsInCart}
         loading={shopping.loading}
       >
         <Flex
@@ -110,7 +150,7 @@ export function ShoppingList({ shopping }: ShoppingListProps) {
                 icon={<CheckOutlined />}
                 onClick={finishShopping}
               >
-                {shoppingPlanning.finishShopping}
+                {shoppingList.finishShopping}
               </Button>
             </Space>
           )}

@@ -5,7 +5,7 @@ import { ShoppingListItem } from "./model";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
-const { shoppingPlanning } = polishLocale;
+const { shoppingPlanning, shoppingList } = polishLocale;
 
 export interface ShoppingProps {
   onInfo(text: string): void;
@@ -37,7 +37,7 @@ export function useShopping({ onInfo }: ShoppingProps): Shopping {
         .then((items: ShoppingListItem[]) => {
           setItems(items);
           setLoading(false);
-          onInfo(shoppingPlanning.itemsRefreshed);
+          onInfo(shoppingList.itemsRefreshed);
         });
     },
     [onInfo],

@@ -4,16 +4,19 @@ namespace Home.Shopping.Application.Dto;
 
 public static class MatcherGroupMapping
 {
-    public static MatcherGroup ToMatcherGroup(this MatcherGroupDto dto)
+    public static MatcherGroup ToMatcherGroup(this MatcherGroupDto groupDto)
     {
         return new MatcherGroup
         {
-            Name = dto.Name,
-            OrdinalNumber = dto.OrdinalNumber,
-            MatchFragments = dto.MatchFragments.Select(mf => new MatchFragment
+            Id = groupDto.Id,
+            Name = groupDto.Name,
+            OrdinalNumber = groupDto.OrdinalNumber,
+            MatchFragments = groupDto.MatchFragments.Select(matchFragmentDto => new MatchFragment
             {
-                MatchString = mf.MatchString,
-                Priority = mf.Priority
+                Id = matchFragmentDto.Id,
+                Name = matchFragmentDto.Name,
+                MatchString = matchFragmentDto.MatchString,
+                Priority = matchFragmentDto.Priority
             }).ToList()
         };
     }
@@ -22,12 +25,15 @@ public static class MatcherGroupMapping
     {
         return new MatcherGroupDto
         {
+            Id = group.Id,
             Name = group.Name,
             OrdinalNumber = group.OrdinalNumber,
-            MatchFragments = group.MatchFragments.Select(mf => new MatchFragmentDto
+            MatchFragments = group.MatchFragments.Select(matchFragment => new MatchFragmentDto
             {
-                MatchString = mf.MatchString,
-                Priority = mf.Priority
+                Id = matchFragment.Id,
+                Name = matchFragment.Name,
+                MatchString = matchFragment.MatchString,
+                Priority = matchFragment.Priority
             }).ToArray()
         };
     }

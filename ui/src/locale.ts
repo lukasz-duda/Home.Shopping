@@ -1,15 +1,42 @@
 export const polishLocale = {
+  menu: {
+    shoppingPlan: "Planowanie",
+    shoppingList: "Zakupy",
+    groups: "Grupy",
+  },
   shoppingPlanning: {
     title: "Planowanie zakupów",
     item: "Przedmiot",
     addItem: "Dodaj",
+    shoppingList: "Lista zakupów",
     changeItem: "Zmień przedmiot",
     saveChanges: "Zapisz zmiany",
     itemChanged: "Przedmiot został zmieniony",
     itemAdded: "Przedmiot został dodany",
+  },
+  shoppingList: {
     itemsRefreshed: "Lista zakupów została odświeżona",
     shoppingList: "Lista zakupów",
     itemsInCart: "W koszyku",
     finishShopping: "Zakończ zakupy",
+  },
+  groups: {
+    title: "Grupy",
+    saveGroups: "Zapisz",
+    addGroup: "Dodaj grupę",
+    groupPrefix: "Grupa ",
+    groupName: "Nazwa",
+    ordinalNumber: "Liczba porządkowa",
+    matchFragments: "Fragmenty do dopasowania",
+    addFragment: "Dodaj fragment",
+    matchFragmentName: "Symbol dopasowania",
+    matchString: "Dopasuj tekst",
+    matchFragmentPriority: "Priorytet dopasowania",
+    saveGroupsError: "Nie udało się zapisać grup.",
+    groupsSaved: "Grupy zostały zapisane.",
+  },
+  error: {
+    unauthorized: "Niautoryzowany dostęp.",
+    unexpected: "Wystąpił nieoczekiwany błąd.",
   },
 };

@@ -16,10 +16,11 @@ public static class ShoppingApi
         app.MapHub<ShoppingHub>("/shopping")
             .RequireAuthorization();
 
-        app.MapPut("/groups", async (MatcherGroupDto[] groups, ShoppingDbContext db) =>
+        app.MapPost("/groups", async (MatcherGroupDto[] groups, ShoppingDbContext db) =>
         {
             MatcherGroup[] existingGroups = db.MatcherGroups.ToArray();
             db.MatcherGroups.RemoveRange(existingGroups);
+            await db.SaveChangesAsync();
 
             foreach (MatcherGroupDto groupDto in groups)
             {
