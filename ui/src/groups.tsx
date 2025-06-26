@@ -1,18 +1,10 @@
 import { DeleteOutlined } from "@ant-design/icons";
-import {
-  AutoComplete,
-  Button,
-  Card,
-  Col,
-  Form,
-  InputNumber,
-  Row,
-  Space,
-} from "antd";
+import { Button, Card, Col, Form, InputNumber, Row, Space, Tree } from "antd";
 import { TextField } from "home-shared-ui";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
+import { Group } from "./groups-api";
 import { polishLocale } from "./locale";
-import { Groupping } from "./use-groupping";
+import { Groupping, newId } from "./use-groupping";
 
 const { groups: groupsLocale } = polishLocale;
 
@@ -40,7 +32,7 @@ export function Groups({ groupping }: GroupsProps) {
 
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
 
-  const [groupName, setGroupName] = useState("");
+  const [groupName, setGroupName] = useState<null | string>("");
 
   const selectedGroup = groups.find((group) => group.id === selectedGroupId);
 
@@ -144,71 +136,73 @@ export function Groups({ groupping }: GroupsProps) {
     );
   }
 
-  const groupOptions = groups.map((group) => ({
-    label: group.name,
-    value: group.id,
-  }));
+  const groupTreeItems: TreeItem[] = groups
+    .sort((a, b) => a.ordinalNumber - b.ordinalNumber)
+    .map((group) => {
+      const treeItem: TreeItem = {
+        key: group.id,
+        title: `${group.ordinalNumber}. ${group.name}`,
+      };
+      return treeItem;
+    });
 
   function handleAddGroup() {
     if (groupName) {
-      addGroup(groupName);
-      selectGroupByName(groupName);
-    }
-  }
-
-  function selectGroupByName(name: string) {
-    const group = groups.find((group) => group.name === name);
-    if (group) {
-      setSelectedGroupId(group.id);
+      const newGroup: Group = {
+        id: newId(),
+        name: groupName,
+        ordinalNumber: defaultOrdinalNumber,
+        matchFragments: [],
+      };
+      addGroup(newGroup);
+      setSelectedGroupId(newGroup.id);
     }
   }
 
   return (
-    <>
-      <Card
-        title={groupsLocale.title}
-        extra={
-          <Button
-            onClick={saveGroups}
-            disabled={savingGroups}
-            loading={savingGroups}
-            type="primary"
-          >
-            {groupsLocale.saveGroups}
-          </Button>
-        }
-      >
-        <Form onFinish={handleAddGroup}>
+    <Row gutter={12}>
+      <Col xl={8}>
+        <Card
+          title={groupsLocale.title}
+          extra={
+            <Button
+              onClick={saveGroups}
+              disabled={savingGroups}
+              loading={savingGroups}
+              type="primary"
+            >
+              {groupsLocale.saveGroups}
+            </Button>
+          }
+        >
           <Space direction="vertical">
-            <AutoComplete
-              options={groupOptions}
-              style={{ minWidth: 200 }}
-              value={groupName}
-              onChange={(value) => {
-                setGroupName(value ?? "");
-                if (value) {
-                  selectGroupByName(value);
-                }
-              }}
-              onSelect={(_, option) => {
-                setGroupName(option.label);
-                if (option.label) {
-                  selectGroupByName(option.label);
-                }
-              }}
-            />
-            <Space>
+            <Form onFinish={handleAddGroup}>
+              <TextField
+                label={groupsLocale.newGroupName}
+                value={groupName}
+                onChange={setGroupName}
+              />
               <Button
                 type="primary"
                 htmlType="submit"
               >
                 {groupsLocale.addGroup}
               </Button>
-            </Space>
+            </Form>
+            <Tree
+              treeData={groupTreeItems}
+              onClick={(_, node) => setSelectedGroupId(node.key)}
+            />
           </Space>
-        </Form>
-      </Card>
-      {selectedGroupCard}
-    </>
+        </Card>
+      </Col>
+      <Col xl={16}>{selectedGroupCard}</Col>
+    </Row>
   );
+}
+
+interface TreeItem {
+  key: string;
+  title: ReactNode;
+  children?: TreeItem[];
 }

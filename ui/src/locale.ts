@@ -23,6 +23,7 @@ export const polishLocale = {
   groups: {
     title: "Grupy",
     saveGroups: "Zapisz",
+    newGroupName: "Nazwa nowej grupy",
     addGroup: "Dodaj grupę",
     groupPrefix: "Grupa ",
     groupName: "Nazwa",

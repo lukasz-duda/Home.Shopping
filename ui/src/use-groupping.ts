@@ -14,7 +14,7 @@ export interface UseGroupsProps {
 
 export interface Groupping {
   groups: Group[];
-  addGroup: (name: string) => void;
+  addGroup: (group: Group) => void;
   changeGroupName: (groupId: string, name: string | null) => void;
   changeGroupOrdinalNumber: (
     groupId: string,
@@ -49,19 +49,13 @@ export function useGroupping({ onInfo, warning }: UseGroupsProps): Groupping {
     onSuccess: updateGroups,
   });
 
-  function addGroup(name: string) {
-    const groupExists = groups.some((group) => group.name === name);
+  function addGroup(newGroup: Group) {
+    const groupExists = groups.some((group) => group.name === newGroup.name);
 
     if (groupExists) {
       return;
     }
 
-    const newGroup: Group = {
-      id: newId(),
-      name,
-      ordinalNumber: defaultOrdinalNumber,
-      matchFragments: [],
-    };
     setGroups([...groups, newGroup]);
   }
 
@@ -209,7 +203,7 @@ export function useGroupping({ onInfo, warning }: UseGroupsProps): Groupping {
   return result;
 }
 
-function newId() {
+export function newId() {
   return crypto.randomUUID();
 }
 
