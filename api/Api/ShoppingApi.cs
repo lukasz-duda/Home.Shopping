@@ -35,12 +35,14 @@ public static class ShoppingApi
             .WithOpenApi()
             .RequireAuthorization();
 
-        app.MapGet("/groups", async (ShoppingDbContext db) =>
+        app.MapGet("/groups", (ShoppingDbContext db) =>
         {
-            MatcherGroupDto[] groups = await db.MatcherGroups
+            MatcherGroupDto[] groups = [.. db.MatcherGroups
                 .Include(g => g.MatchFragments)
                 .Select(g => g.ToMatcherGroupDto())
-                .ToArrayAsync();
+                .ToArray()
+                .OrderBy(g => g.OrdinalNumber)
+                .ThenBy(g => g.Name)];
 
             return Results.Ok(groups);
         })

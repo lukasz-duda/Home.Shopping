@@ -11,13 +11,14 @@ public static class MatcherGroupMapping
             Id = groupDto.Id,
             Name = groupDto.Name,
             OrdinalNumber = groupDto.OrdinalNumber,
-            MatchFragments = groupDto.MatchFragments.Select(matchFragmentDto => new MatchFragment
-            {
-                Id = matchFragmentDto.Id,
-                Name = matchFragmentDto.Name,
-                MatchString = matchFragmentDto.MatchString,
-                Priority = matchFragmentDto.Priority
-            }).ToList()
+            MatchFragments = [.. groupDto.MatchFragments
+                .Select(matchFragmentDto => new MatchFragment
+                {
+                    Id = matchFragmentDto.Id,
+                    Name = matchFragmentDto.Name,
+                    MatchString = matchFragmentDto.MatchString,
+                    Priority = matchFragmentDto.Priority
+                })]
         };
     }
 
@@ -28,13 +29,16 @@ public static class MatcherGroupMapping
             Id = group.Id,
             Name = group.Name,
             OrdinalNumber = group.OrdinalNumber,
-            MatchFragments = group.MatchFragments.Select(matchFragment => new MatchFragmentDto
-            {
-                Id = matchFragment.Id,
-                Name = matchFragment.Name,
-                MatchString = matchFragment.MatchString,
-                Priority = matchFragment.Priority
-            }).ToArray()
+            MatchFragments = [.. group.MatchFragments
+                .Select(matchFragment => new MatchFragmentDto
+                {
+                    Id = matchFragment.Id,
+                    Name = matchFragment.Name,
+                    MatchString = matchFragment.MatchString,
+                    Priority = matchFragment.Priority
+                })
+                .ToArray()
+                .OrderBy(matchFragmentDto => matchFragmentDto.MatchString)]
         };
     }
 }
