@@ -120,7 +120,7 @@ describe("groupItems", () => {
   });
 
   describe("two groups", () => {
-    it("returns groups sorted by name", () => {
+    it("returns groups sorted by ordinal number", () => {
       const result = groupItems([item1, item2], [group1, group3]);
 
       expect(result.groups).toStrictEqual([matchedGroup3, matchedGroup1]);
