@@ -1,10 +1,12 @@
 import {
   GroupOutlined,
+  ImportOutlined,
   ShoppingCartOutlined,
   UnorderedListOutlined,
 } from "@ant-design/icons";
 import { Flex, Menu, notification } from "antd";
 import { useCallback, useState } from "react";
+import { ImportForm } from "./import";
 import { Groups } from "./groups";
 import { polishLocale } from "./locale";
 import { ShoppingList } from "./shopping-list";
@@ -12,7 +14,7 @@ import { ShoppingPlan } from "./shopping-plan";
 import { useGroupping } from "./use-groupping";
 import { useShopping } from "./use-shopping";
 
-type ShoppingView = "shoppingPlan" | "shoppingList" | "groups";
+type ShoppingView = "shoppingPlan" | "shoppingList" | "groups" | "import";
 
 const { menu } = polishLocale;
 
@@ -75,6 +77,11 @@ export function ShoppingApplication() {
               label: menu.groups,
               icon: <GroupOutlined />,
             },
+            {
+              key: "import",
+              label: menu.import,
+              icon: <ImportOutlined />,
+            },
           ]}
           onClick={handleMenuClick}
         />
@@ -86,6 +93,7 @@ export function ShoppingApplication() {
           />
         )}
         {selected("groups") && <Groups groupping={groupping} />}
+        {selected("import") && <ImportForm shopping={shopping} />}
       </Flex>
     </>
   );

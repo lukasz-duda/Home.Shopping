@@ -3,22 +3,29 @@ export const polishLocale = {
     shoppingPlan: "Planowanie",
     shoppingList: "Zakupy",
     groups: "Grupy",
+    import: "Import",
   },
   shoppingPlanning: {
     title: "Planowanie zakupów",
-    item: "Przedmiot",
+    item: "Produkt",
     addItem: "Dodaj",
     shoppingList: "Lista zakupów",
-    changeItem: "Zmień przedmiot",
+    changeItem: "Zmień produkt",
     saveChanges: "Zapisz zmiany",
-    itemChanged: "Przedmiot został zmieniony",
-    itemAdded: "Przedmiot został dodany",
+    itemChanged: "Produkt został zmieniony",
+    itemAdded: "Produkt został dodany",
   },
   shoppingList: {
     itemsRefreshed: "Lista zakupów została odświeżona",
     shoppingList: "Lista zakupów",
     itemsInCart: "W koszyku",
     finishShopping: "Zakończ zakupy",
+  },
+  import: {
+    title: "Import listy zakupów",
+    placeholder:
+      "Podaj produkty w kolejnych liniach lub rozdzielone przecinkami",
+    command: "Importuj",
   },
   groups: {
     title: "Grupy",

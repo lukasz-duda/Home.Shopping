@@ -27,6 +27,34 @@ public class ShoppingHub(ShoppingDbContext dbContext) : Hub
         await Clients.All.SendAsync("ItemAdded", item);
     }
 
+    public async Task Import(string[] names)
+    {
+        var items = names
+            .Where(name => !string.IsNullOrWhiteSpace(name))
+            .Select(name => name.Trim())
+            .Where(name => !string.IsNullOrWhiteSpace(name))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Select(name => new ShoppingListItem
+            {
+                Id = Guid.NewGuid(),
+                Name = name,
+            })
+            .ToList();
+
+        if (items.Count == 0)
+        {
+            return;
+        }
+
+        dbContext.ShoppingListItems.AddRange(items);
+        await dbContext.SaveChangesAsync();
+
+        foreach (var item in items)
+        {
+            await Clients.All.SendAsync("ItemAdded", item);
+        }
+    }
+
     public async Task RemoveItem(Guid itemId)
     {
         ShoppingListItem? foundItem = await dbContext.ShoppingListItems.FindAsync(itemId);

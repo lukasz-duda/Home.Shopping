@@ -15,6 +15,7 @@ export interface Shopping {
   loading: boolean;
   items: ShoppingListItem[];
   addItem: (itemName: string) => void;
+  importItems: (itemNames: string[]) => void;
   changeItem: (changedItem: ShoppingListItem) => void;
   removeItem: (itemid: string) => void;
   addToCart: (itemId: string) => void;
@@ -45,6 +46,10 @@ export function useShopping({ onInfo }: ShoppingProps): Shopping {
 
   function addItem(itemName: string) {
     connectionRef.current?.invoke("AddItem", itemName);
+  }
+
+  function importItems(itemNames: string[]) {
+    connectionRef.current?.invoke("Import", itemNames);
   }
 
   const itemAdded = useCallback(
@@ -133,6 +138,7 @@ export function useShopping({ onInfo }: ShoppingProps): Shopping {
     loading,
     items,
     addItem,
+    importItems,
     changeItem,
     removeItem,
     addToCart,
